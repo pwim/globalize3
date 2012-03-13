@@ -146,6 +146,13 @@ class Globalize3Test < Test::Unit::TestCase
     assert_equal 'title en', Post.with_translations(:de).first.translation_for(:en).title
   end
 
+  test "writing attribute with locale invalidates cache properly" do
+    post = Post.new
+    post.write_attribute :title, 'title de', :locale => :de
+    with_locale(:de) { assert_equal 'title de', post.title }
+    assert_equal 'title de', post.translation_for(:de).title
+  end
+
   test "a subclass of an untranslated model can translate attributes" do
     post = Post.create(:title => 'title')
     translated_comment = TranslatedComment.create(:post => post, :content => 'content')
